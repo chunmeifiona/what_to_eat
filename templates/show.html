@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-md-center">
+    <div class="col-md-7 col-lg-5">
+        <h2 class="join-message">Hello, {{user.username}}</h2>
+        <div>
+            <img src="{{user.image_url}}" alt="">
+        </div>
+        <span>{{user.email}}</span><br>
+        <span>My favorite cuisine is {{user.cuisineType}}</span>
+        <div>
+            <a href="/user/profile"><button>Edit My Profile</button></a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -23,7 +23,8 @@ class User(db.Model):
     password = db.Column(db.Text, nullable=False)
     email = db.Column(db.Text, nullable=False, unique=True)
     image_url = db.Column(db.Text, default = DEFAULT_IMG_URL_USER)
-    # cuisine_id = db.Column(db.Integer, db.ForeignKey('cuisine.id'))
+    cuisineType = db.Column(db.Text)
+    
     # health_id = db.Column(db.Integer, db.ForeignKey('health.id'))
 
     recipe = db.relationship("Recipe", secondary="userrecipes", backref="user", cascade="all, delete")

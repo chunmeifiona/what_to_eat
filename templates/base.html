@@ -23,23 +23,13 @@
                 </a>
             </div>
             <ul class="nav navbar-nav navbar-right">
-                {% if request.endpoint != None %}
-                <li>
-                    <form class="navbar-form navbar-right" action="/users">
-                        <input name="q" class="form-control" placeholder="Search Recipe" id="search">
-                        <button class="btn btn-default">
-                            <span class="fa fa-search"></span>
-                        </button>
-                    </form>
-                </li>
-                {% endif %}
                 {% if not g.user %}
                 <li><a href="/signup">Sign up</a></li>
                 <li><a href="/login">Log in</a></li>
                 {% else %}
-                <li><a href="/users/{{ g.user.username }}"></a></li>
-                <li><a href="/recipe">Recipe</a></li>
-                <li><a href="/logout">Log out</a></li>
+                <li><a href="/user/{{g.user.id}}">{{g.user.username}}/</a></li>
+                <li><a href="/recipe">My Recipe/</a></li>
+                <li><a href="/logout">Log out/ </a></li>
                 {% endif %}
             </ul>
         </div>

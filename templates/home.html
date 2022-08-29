@@ -1,22 +1,57 @@
 {% extends 'base.html' %}
 {% block content %}
+<div class="row justify-content-md-center">
+    <div class="col-md-7 col-lg-5">
+        <form method="POST" id="user_form">
+            {{ form.hidden_tag() }}
 
-<div class="card" style="width: 18rem;">
-    <img src="{{recipe_image}}" class="card-img-top" alt="...">
-    <div class="card-body">
-        <h5 class="card-title">{{recipe_label}}</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-            content.</p>
+            {% for field in form if field.widget.input_type != 'hidden' %}
+            {% for error in field.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+            {{ field.label }}
+            {{ field(class_="form-control") }}
+            {% endfor %}
+
+            <button class="btn btn-primary btn-block btn-lg">Search</button>
+        </form>
     </div>
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item">An item</li>
-        <li class="list-group-item">A second item</li>
-        <li class="list-group-item">A third item</li>
-    </ul>
-    <div class="card-body">
-        <a href="#" class="card-link">Card link</a>
-        <a href="#" class="card-link">Another link</a>
+</div>
+<div class="row justify-content-md-center">
+    {% for recipe in recipes%}
+    <div class="card list-group-item col-3 m-2" style="width: 18rem;">
+        <a href="{{recipe.url}}">
+            <img src="{{recipe.image}}" class="card-img-top" alt="..."></a>
+        <div class="card-body">
+            <a href="{{recipe.url}}">
+                <h5 class="card-title">{{recipe.label}}</h5>
+            </a>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    {% for cuisineType in recipe.cuisineType %}
+                    {{cuisineType}}
+                    {% endfor %}
+                </li>
+                <li class="list-group-item">
+                    {% for dishType in recipe.dishType %}
+                    {{dishType}}
+                    {% endfor %}
+                </li>
+                <li class="list-group-item">
+                    {% for mealType in recipe.mealType %}
+                    {{mealType}}
+                    {% endfor %}
+                </li>
+            </ul>
+            <p class="card-text"> Ingeredients : <br>
+                {% for ingredient in recipe.ingredientLines %}
+                <small>{{ingredient}}</small><br>
+                {% endfor %}
+            </p>
+        </div>
+
     </div>
+    {% endfor %}
 </div>
 
 

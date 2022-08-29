@@ -1,10 +1,11 @@
+from crypt import methods
 import os
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 import requests
-from forms import UserAddForm, LoginForm
-from models import db, connect_db, User, Recipe
+from forms import UserAddForm, LoginForm, SearchForm, UserEditForm
+from models import db, connect_db, User, Recipe, DEFAULT_IMG_URL_USER
 from secret import app_id, app_key
 
 APP_ID = app_id
@@ -21,7 +22,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
     os.environ.get('DATABASE_URL', 'postgresql:///what_to_eat'))
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = False
+app.config['SQLALCHEMY_ECHO'] = True
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
 toolbar = DebugToolbarExtension(app)
@@ -49,6 +50,24 @@ def do_logout():
     """Logout user."""
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
+
+def search_recipe(params):
+    """search recipes"""
+    res = requests.get(f"{API_BASE_URL}", params = params)
+    data = res.json() 
+    recipes = []
+    
+    for hit in data["hits"]:
+        recipe = {k:v for k, v in {"image":hit["recipe"]["image"], 
+                                   "label":hit["recipe"]["label"], 
+                                   "url":hit["recipe"]["url"], 
+                                   "ingredientLines":hit["recipe"]["ingredientLines"],
+                                   "cuisineType":hit["recipe"]["cuisineType"],
+                                   "dishType":hit["recipe"]["dishType"],
+                                   "mealType":hit["recipe"]["mealType"]}.items()}
+        recipes.append(recipe)
+
+    return recipes
 
 @app.route('/signup', methods=["GET", "POST"])
 def signup():
@@ -112,18 +131,73 @@ def logout():
     flash("Goodbye!","success")
     return redirect("/login")
 
-@app.route('/')
+@app.route('/', methods=['GET','POST'])
 def home_page():
     """show home page"""
+    form = SearchForm()
+    if g.user:
+        params ={'q':'beef', 'app_id':APP_ID, 'app_key':APP_KEY, 'type':"public", 'cuisineType':g.user.cuisineType}
+    else:
+        params ={'q':'beef', 'app_id':APP_ID, 'app_key':APP_KEY, 'type':"public"}
 
-    res = requests.get(f"{API_BASE_URL}", 
-                            params ={'q':"chicken",
-                                    'app_id':APP_ID, 
-                                    'app_key':APP_KEY, 
-                                    'type':"public"})
+    if form.validate_on_submit():
+        search_q = form.search_q.data
+        cuisineType = form.cuisineType.data
+        mealType = form.mealType.data
+        dishType = form.dishType.data
 
-    data = res.json()
-    recipe_image = data["hits"][0]["recipe"]["image"]
-    recipe_label = data["hits"][0]["recipe"]["label"]
+        new_params= {k:v for k,v in {"q":search_q, "cuisineType":cuisineType, "mealType":mealType, "dishType":dishType}.items() if v != 'All'}
+        params.update(new_params)
 
-    return render_template("home.html", recipe_image=recipe_image, recipe_label=recipe_label)
+    recipes = search_recipe(params)
+    return render_template("home.html", form=form, recipes=recipes)
+
+@app.route('/user/<int:user_id>')
+def show_user(user_id):
+    """Show user's information"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    user = g.user
+    return render_template('show.html', user=user)
+
+@app.route('/user/profile', methods=['GET','POST'])
+def profile():
+    """Update profile for current user."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    user = g.user
+    form = UserEditForm(obj=user)
+
+    if form.validate_on_submit():
+        if User.authenticate(user.username, form.password.data):
+            user.username = form.username.data
+            user.email = form.email.data
+            user.image_url = form.image_url.data or DEFAULT_IMG_URL_USER
+            user.cuisineType = form.cuisineType.data
+
+            db.session.commit()
+            return redirect(f"/user/{user.id}")
+
+
+        flash("Wrong password, please try again!", 'danger')
+        
+
+    return render_template("edit.html",form=form, user_id=user.id)
+
+@app.route('/users/delete')
+def delete_user():
+    """Delete user."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    do_logout()
+
+    db.session.delete(g.user)
+    db.session.commit()
+
+    return redirect("/signup")
