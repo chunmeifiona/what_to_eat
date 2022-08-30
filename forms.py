@@ -13,6 +13,8 @@ dishs = ["All","Biscuits and cookies","Bread","Cereals","Condiments and sauces",
         "Drinks","Main course","Pancake","Preps","Preserve","Salad","Sandwiches",
         "Side dish","Soup","Starter","Sweets"]
 
+types = ["Dairy","Fruit","Vegetable","Fish/Seafood","Meat/Poultry","Grain/Bean/Nuts"]
+
 class UserAddForm(FlaskForm):
     """Form for adding users. """
 
@@ -42,3 +44,9 @@ class SearchForm(FlaskForm):
     cuisineType = SelectField('CuisineType', choices=[(cu, cu) for cu in cuisines])
     mealType = SelectField('MealType', choices=[(m, m) for m in meals])
     dishType = SelectField('DishType', choices=[(d, d) for d in dishs])
+
+class RefrigeratorForm(FlaskForm):
+    """Search recipe form"""
+    name = StringField('Food',validators=[DataRequired()])
+    type = SelectField('MealType', choices=[(t, t) for t in types])
+    

@@ -17,42 +17,80 @@
         </form>
     </div>
 </div>
+
 <div class="row justify-content-md-center">
     {% for recipe in recipes%}
-    <div class="card list-group-item col-3 m-2" style="width: 18rem;">
+    <div class="card list-group-item col-3 m-2 {{loop.index}}" style="width: 18rem;">
+        <a id="recipe_url_{{loop.index}}" href="{{recipe.url}}">
+            <img id="recipe_image_{{loop.index}}" src="{{recipe.image}}" class="card-img-top" alt="..."></a>
+
         <a href="{{recipe.url}}">
-            <img src="{{recipe.image}}" class="card-img-top" alt="..."></a>
-        <div class="card-body">
-            <a href="{{recipe.url}}">
-                <h5 class="card-title">{{recipe.label}}</h5>
-            </a>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    {% for cuisineType in recipe.cuisineType %}
-                    {{cuisineType}}
-                    {% endfor %}
-                </li>
-                <li class="list-group-item">
-                    {% for dishType in recipe.dishType %}
-                    {{dishType}}
-                    {% endfor %}
-                </li>
-                <li class="list-group-item">
-                    {% for mealType in recipe.mealType %}
-                    {{mealType}}
-                    {% endfor %}
-                </li>
-            </ul>
-            <p class="card-text"> Ingeredients : <br>
-                {% for ingredient in recipe.ingredientLines %}
-                <small>{{ingredient}}</small><br>
-                {% endfor %}
-            </p>
+            <h5 id="recipe_label_{{loop.index}}" class="card-title">{{recipe.label}}
+            </h5>
+        </a>
+        <form action="/myrecipe/add" method="POST">
+            <button id="add_recipe_{{loop.index}}" data-index="{{loop.index}}" type="submit">Add to my recipe</button>
+            <input type="text" name="label" class="d-none" value="{{recipe.label}}">
+            <input type="text" name="image" class="d-none" value="{{recipe.image}}">
+            <input type="text" name="cuisinetype" class="d-none" value="{{recipe.cuisineType}}">
+            <input type="text" name="dishtype" class="d-none" value="{{recipe.dishType}}">
+            <input type="text" name="mealtype" class="d-none" value="{{recipe.mealType}}">
+            <input type="text" name="ingredient" class="d-none" value="{{recipe.ingredientLines}}">
+        </form>
+        <div id="recipe_ingeredients_{{loop.index}}" class="card-text"
+            data-options='{"ingredient":"{{recipe.ingredientLines}}"}'>
+            Ingeredients : <br>
+            {% for ingredient in recipe.ingredientLines %}
+            <small>{{ingredient}}</small><br>
+            {% endfor %}
         </div>
 
     </div>
     {% endfor %}
 </div>
+
+<!-- <div class="row justify-content-md-center">
+    {% for recipe in recipes%}
+    <div class="card list-group-item col-3 m-2 {{loop.index}}" style="width: 18rem;">
+        <a id="recipe_url_{{loop.index}}" href="{{recipe.url}}">
+            <img id="recipe_image_{{loop.index}}" src="{{recipe.image}}" class="card-img-top" alt="..."></a>
+
+        <a href="{{recipe.url}}">
+            <h5 id="recipe_label_{{loop.index}}" class="card-title">{{recipe.label}}
+            </h5>
+        </a>
+        <button id="add_recipe_{{loop.index}}" data-index="{{loop.index}}">Add to my recipe</button>
+
+        <div id="recipe_cuisinetype_{{loop.index}}" class="list-group-item" data-options='{"cuisineType":"Chinese"}'>
+            {% for cuisineType in recipe.cuisineType %}
+            {{cuisineType}}
+            {% endfor %}
+        </div>
+        <div id="recipe_dishtype_{{loop.index}}" class="list-group-item d-none"
+            data-options='{"dishType":"{{recipe.dishType}}"}'>
+            {% for dishType in recipe.dishType %}
+            {{dishType}}
+            {% endfor %}
+        </div>
+        <div id="recipe_mealtype_{{loop.index}}" class="list-group-item d-none"
+            data-options='{"mealType":"{{recipe.mealType}}"}'>
+            {% for mealType in recipe.mealType %}
+            {{mealType}}
+            {% endfor %}
+        </div>
+
+        <div id="recipe_ingeredients_{{loop.index}}" class="card-text d-none"
+            data-options='{"ingredient":"{{recipe.ingredientLines}}"}'>
+            Ingeredients : <br>
+            {% for ingredient in recipe.ingredientLines %}
+            <small>{{ingredient}}</small><br>
+            {% endfor %}
+        </div>
+
+
+    </div>
+    {% endfor %}
+</div> -->
 
 
 {% endblock %}

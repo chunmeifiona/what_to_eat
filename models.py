@@ -24,10 +24,9 @@ class User(db.Model):
     email = db.Column(db.Text, nullable=False, unique=True)
     image_url = db.Column(db.Text, default = DEFAULT_IMG_URL_USER)
     cuisineType = db.Column(db.Text)
-    
-    # health_id = db.Column(db.Integer, db.ForeignKey('health.id'))
 
-    recipe = db.relationship("Recipe", secondary="userrecipes", backref="user", cascade="all, delete")
+    recipe = db.relationship("Recipe", backref="user", cascade="all, delete")
+    Refrigerator = db.relationship("Refrigerator", backref="user", cascade="all, delete")
 
     @classmethod
     def signup(cls, username, password, email, image_url):
@@ -56,34 +55,24 @@ class User(db.Model):
             return user
         else:
             return False
+
 class Recipe(db.Model):
     __tablename__ = 'recipes'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    label = db.Column(db.Text, nullable=False)
+    label = db.Column(db.Text, nullable=False, unique=True)
     image = db.Column(db.Text, nullable=False)
-    ingredient = db.Column(db.Text, nullable=False)
-    mealtype = db.Column(db.Text, nullable=False)
-    dishtype = db.Column(db.Text, nullable=False)
-    # health_id = db.Column(db.Integer, db.ForeignKey('health.id'))
-    # cuisine_id = db.Column(db.Integer, db.ForeignKey('cuisine.id'))
+    ingredient = db.Column(db.Text)
+    mealtype = db.Column(db.Text)
+    dishtype = db.Column(db.Text)
+    cuisinetype = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    
 
-class UserRecipe(db.Model):
-    """Mapping of a user to a recipes"""
-    __tablename__ = 'userrecipes'
+class Refrigerator(db.Model):
+    __tablename__ = 'refrigerators'
 
-    id=db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id=db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    recipe_id=db.Column(db.Integer, db.ForeignKey("recipes.id"), nullable=False)
-
-# class Cuisine(db.Model):
-#     __tablename__ = 'cuisines'
-
-#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     cuisinetype = db.Column(db.Text, nullable=False)
-
-# class Health(db.Model):
-#     __tablename__ = 'healths'
-
-#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     healthtype = db.Column(db.Text, nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.Text, nullable=False)
+    type = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)

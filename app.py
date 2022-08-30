@@ -1,11 +1,13 @@
 from crypt import methods
 import os
+import random
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
+from  sqlalchemy.sql.expression import func
 import requests
-from forms import UserAddForm, LoginForm, SearchForm, UserEditForm
-from models import db, connect_db, User, Recipe, DEFAULT_IMG_URL_USER
+from forms import UserAddForm, LoginForm, SearchForm, UserEditForm, RefrigeratorForm
+from models import db, connect_db, User, Recipe, Refrigerator, DEFAULT_IMG_URL_USER
 from secret import app_id, app_key
 
 APP_ID = app_id
@@ -29,10 +31,11 @@ toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
 
-
 ##############################################################################
-# User signup/login/logout
-
+##############################################################################
+# User signup/login/logout/edit/show/delete
+##############################################################################
+##############################################################################
 
 @app.before_request
 def add_user_to_g():
@@ -51,32 +54,10 @@ def do_logout():
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
 
-def search_recipe(params):
-    """search recipes"""
-    res = requests.get(f"{API_BASE_URL}", params = params)
-    data = res.json() 
-    recipes = []
-    
-    for hit in data["hits"]:
-        recipe = {k:v for k, v in {"image":hit["recipe"]["image"], 
-                                   "label":hit["recipe"]["label"], 
-                                   "url":hit["recipe"]["url"], 
-                                   "ingredientLines":hit["recipe"]["ingredientLines"],
-                                   "cuisineType":hit["recipe"]["cuisineType"],
-                                   "dishType":hit["recipe"]["dishType"],
-                                   "mealType":hit["recipe"]["mealType"]}.items()}
-        recipes.append(recipe)
-
-    return recipes
 
 @app.route('/signup', methods=["GET", "POST"])
 def signup():
-    """Handle user signup.
-    Create new user and add to DB. Redirect to home page.
-    If form not valid, present form.
-    If the there already is a user with that username: flash message
-    and re-present form.
-    """
+    """Handle user signup."""
 
     form = UserAddForm()
 
@@ -92,14 +73,13 @@ def signup():
 
         except IntegrityError:
             flash("Username/email already taken", 'danger')
-            return render_template('signup.html', form=form)
+            return render_template('user/signup.html', form=form)
 
         do_login(user)
-
         return redirect("/")
 
     else:
-        return render_template('signup.html', form=form)
+        return render_template('user/signup.html', form=form)
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -119,8 +99,7 @@ def login():
 
         flash("Invalid credentials.", 'danger')
 
-    return render_template('login.html', form=form)
-
+    return render_template('user/login.html', form=form)
 
 @app.route('/logout')
 def logout():
@@ -131,26 +110,6 @@ def logout():
     flash("Goodbye!","success")
     return redirect("/login")
 
-@app.route('/', methods=['GET','POST'])
-def home_page():
-    """show home page"""
-    form = SearchForm()
-    if g.user:
-        params ={'q':'beef', 'app_id':APP_ID, 'app_key':APP_KEY, 'type':"public", 'cuisineType':g.user.cuisineType}
-    else:
-        params ={'q':'beef', 'app_id':APP_ID, 'app_key':APP_KEY, 'type':"public"}
-
-    if form.validate_on_submit():
-        search_q = form.search_q.data
-        cuisineType = form.cuisineType.data
-        mealType = form.mealType.data
-        dishType = form.dishType.data
-
-        new_params= {k:v for k,v in {"q":search_q, "cuisineType":cuisineType, "mealType":mealType, "dishType":dishType}.items() if v != 'All'}
-        params.update(new_params)
-
-    recipes = search_recipe(params)
-    return render_template("home.html", form=form, recipes=recipes)
 
 @app.route('/user/<int:user_id>')
 def show_user(user_id):
@@ -160,9 +119,9 @@ def show_user(user_id):
         return redirect("/")
     
     user = g.user
-    return render_template('show.html', user=user)
+    return render_template('user/show.html', user=user)
 
-@app.route('/user/profile', methods=['GET','POST'])
+@app.route('/user/edit', methods=['GET','POST'])
 def profile():
     """Update profile for current user."""
 
@@ -182,11 +141,10 @@ def profile():
             db.session.commit()
             return redirect(f"/user/{user.id}")
 
-
         flash("Wrong password, please try again!", 'danger')
         
 
-    return render_template("edit.html",form=form, user_id=user.id)
+    return render_template("user/edit.html",form=form, user_id=user.id)
 
 @app.route('/users/delete')
 def delete_user():
@@ -200,4 +158,168 @@ def delete_user():
     db.session.delete(g.user)
     db.session.commit()
 
-    return redirect("/signup")
+    return redirect("/")
+
+#################################################################
+#################################################################
+#search recipes / add to myrecipe / delete from  myrecipe
+#################################################################
+#################################################################
+
+def search_recipe(params):
+    """search recipes via extarnal api and get recipe json data"""
+    res = requests.get(f"{API_BASE_URL}", params = params)
+    data = res.json() 
+    recipes = []
+    
+    for hit in data["hits"]:
+        recipe = {k:v for k, v in {"image":hit["recipe"].get("image", "No"), 
+                                   "label":hit["recipe"].get("label", "No"), 
+                                   "url":hit["recipe"].get("url", "No"), 
+                                   "ingredientLines":hit["recipe"].get("ingredientLines", "No"),
+                                   "cuisineType":hit["recipe"].get("cuisineType", "No"),
+                                   "dishType":hit["recipe"].get("dishType", "No"),
+                                #    "dishType":hit["recipe"]["dishType"],
+                                   "mealType":hit["recipe"].get("mealType", "No")}.items()}
+        recipes.append(recipe)
+
+    return recipes
+
+@app.route('/', methods=['GET','POST'])
+def home_page():
+    """show home page"""
+    form = SearchForm()
+    food_list = ["beef","chicken","pork"]
+    search_q = random.choice(food_list)
+    if g.user:
+        food = Refrigerator.query.filter(Refrigerator.user_id==g.user.id).order_by(func.random()).first()
+        search_q = food.name if food else search_q
+        params ={'q':search_q, 'app_id':APP_ID, 'app_key':APP_KEY, 'type':"public", 
+                 'cuisineType':g.user.cuisineType}
+    else:
+        params ={'q':search_q, 'app_id':APP_ID, 'app_key':APP_KEY, 'type':"public"}
+
+    if form.validate_on_submit():
+        search_q = form.search_q.data
+        cuisineType = form.cuisineType.data
+        mealType = form.mealType.data
+        dishType = form.dishType.data
+
+        new_params= {k:v for k,v in {"q":search_q, "cuisineType":cuisineType, "mealType":mealType, "dishType":dishType}.items() if v != 'All'}
+        params.update(new_params)
+
+    print("********************")
+    print(params)
+    recipes = search_recipe(params)
+    return render_template("home.html", form=form, recipes=recipes)
+
+
+@app.route('/myrecipe/add',methods=['GET','POST'])
+def add_recipe():
+    """add a recipe to myrecipe"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    label = request.form["label"]
+    image =  request.form["image"]
+    ingredient =  request.form["ingredient"].replace("['","").replace("']","").replace("', '","\n")
+    cuisinetype = request.form["cuisinetype"].replace("']",'').replace("['",'')
+    mealtype = request.form["mealtype"].replace("']",'').replace("['",'')
+    dishtype = request.form["dishtype"].replace("']",'').replace("['",'')
+
+    recipe = Recipe(label=label, image=image, cuisinetype=cuisinetype, dishtype=dishtype,mealtype=mealtype,ingredient=ingredient, user_id=g.user.id)
+    db.session.add(recipe)
+    db.session.commit()
+    
+    return redirect("/")
+
+@app.route('/myrecipe/delete/<int:recipe_id>')
+def delete_recipe(recipe_id):
+    """delete a recipe from myrecipe"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+        
+    recipe = Recipe.query.get_or_404(recipe_id)
+    db.session.delete(recipe)
+    db.session.commit()
+
+    return redirect('/user/myrecipe')
+
+@app.route('/myrecipe/show')
+def show_myrecipe():
+    """show all recipes in myrecipe"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    recipes = Recipe.query.filter(Recipe.user_id==g.user.id).all()
+    return render_template('myrecipe.html',recipes=recipes)
+
+#################################################################
+#################################################################
+# add/delete some food to my refrigerator
+#################################################################
+#################################################################
+
+@app.route("/myrefrigerator",methods=['GET','POST'])
+def add_refrigerator():
+    """display and add some food to my refrigerator"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    refrigerator = Refrigerator.query.filter(Refrigerator.user_id==g.user.id).all()
+    form = RefrigeratorForm()
+   
+    if form.validate_on_submit():
+        name=form.name.data,
+        type=form.type.data
+        
+        refrigerator = Refrigerator(name=name, type=type, user_id = g.user.id)
+        db.session.add(refrigerator)
+        db.session.commit()
+
+        return redirect("/myrefrigerator")
+
+    else:
+        return render_template('refrigerator.html', form=form, refrigerator=refrigerator)
+
+@app.route("/myrefrigerator/delete/<int:refrigerator_id>")
+def delete_refrigerator(refrigerator_id):
+    """delete food from my refrigerator"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    food = Refrigerator.query.get_or_404(refrigerator_id)
+    db.session.delete(food)
+    db.session.commit()
+
+    return redirect("/myrefrigerator")
+
+
+# for js file api
+# @app.route('/api/add-recipe', methods = ['POST'])
+# def add_recipe_1():
+#     """Add to my recipe"""
+#     if not g.user:
+#         flash("Access unauthorized.", "danger")
+#         return redirect("/")
+
+#     label = request.json["label"]
+#     image = request.json["image"]
+#     cuisinetype = request.json["cuisinetype"]
+#     dishtype = request.json["dishtype"]
+#     mealtype = request.json["mealtype"]
+#     ingredient = request.json["ingredient"]
+
+#     recipe = Recipe(label=label, image=image, cuisinetype=cuisinetype, dishtype=dishtype,mealtype=mealtype,ingredient=ingredient)
+#     db.session.add(recipe)
+#     db.session.commit()
+
+#     return ("recipe", 201)
+
+
+
+

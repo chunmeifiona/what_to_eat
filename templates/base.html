@@ -27,8 +27,9 @@
                 <li><a href="/signup">Sign up</a></li>
                 <li><a href="/login">Log in</a></li>
                 {% else %}
-                <li><a href="/user/{{g.user.id}}">{{g.user.username}}/</a></li>
-                <li><a href="/recipe">My Recipe/</a></li>
+                <li><a href="/user/{{g.user.id}}">{{g.user.username}}***</a></li>
+                <li><a href="/myrefrigerator">My Refrigerator***</a></li>
+                <li><a href="/myrecipe/show">My Recipe***</a></li>
                 <li><a href="/logout">Log out/ </a></li>
                 {% endif %}
             </ul>
@@ -43,6 +44,10 @@
         {% endblock %}
 
     </div>
+    <script src="https://unpkg.com/axios/dist/axios.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <!-- <script src="/static/recipe.js"></script> -->
 </body>
 
 </html>
