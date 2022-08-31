@@ -26,7 +26,7 @@ class User(db.Model):
     cuisineType = db.Column(db.Text)
 
     recipe = db.relationship("Recipe", backref="user", cascade="all, delete")
-    Refrigerator = db.relationship("Refrigerator", backref="user", cascade="all, delete")
+    refrigerator = db.relationship("Refrigerator", backref="user", cascade="all, delete")
 
     @classmethod
     def signup(cls, username, password, email, image_url):
@@ -61,12 +61,12 @@ class Recipe(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     label = db.Column(db.Text, nullable=False, unique=True)
-    image = db.Column(db.Text, nullable=False)
+    image = db.Column(db.Text, default = DEFAULT_IMG_URL_RECIPE)
     ingredient = db.Column(db.Text)
     mealtype = db.Column(db.Text)
     dishtype = db.Column(db.Text)
     cuisinetype = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     
 
 class Refrigerator(db.Model):
@@ -75,4 +75,4 @@ class Refrigerator(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.Text, nullable=False)
     type = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)

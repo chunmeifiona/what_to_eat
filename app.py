@@ -146,7 +146,7 @@ def profile():
 
     return render_template("user/edit.html",form=form, user_id=user.id)
 
-@app.route('/users/delete')
+@app.route('/user/delete')
 def delete_user():
     """Delete user."""
     if not g.user:
@@ -208,9 +208,8 @@ def home_page():
         new_params= {k:v for k,v in {"q":search_q, "cuisineType":cuisineType, "mealType":mealType, "dishType":dishType}.items() if v != 'All'}
         params.update(new_params)
 
-    print("********************")
-    print(params)
     recipes = search_recipe(params)
+    
     return render_template("home.html", form=form, recipes=recipes)
 
 
@@ -227,10 +226,14 @@ def add_recipe():
     cuisinetype = request.form["cuisinetype"].replace("']",'').replace("['",'')
     mealtype = request.form["mealtype"].replace("']",'').replace("['",'')
     dishtype = request.form["dishtype"].replace("']",'').replace("['",'')
+    
+    try:
+        recipe = Recipe(label=label, image=image, cuisinetype=cuisinetype, dishtype=dishtype,mealtype=mealtype,ingredient=ingredient, user_id=g.user.id)
+        db.session.add(recipe)
+        db.session.commit()
 
-    recipe = Recipe(label=label, image=image, cuisinetype=cuisinetype, dishtype=dishtype,mealtype=mealtype,ingredient=ingredient, user_id=g.user.id)
-    db.session.add(recipe)
-    db.session.commit()
+    except IntegrityError:
+        flash("Already in my recipe",'danger')
     
     return redirect("/")
 
@@ -245,7 +248,7 @@ def delete_recipe(recipe_id):
     db.session.delete(recipe)
     db.session.commit()
 
-    return redirect('/user/myrecipe')
+    return redirect('/myrecipe/show')
 
 @app.route('/myrecipe/show')
 def show_myrecipe():
