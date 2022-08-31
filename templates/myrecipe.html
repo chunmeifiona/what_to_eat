@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="row justify-content-md-center">
+    <h1>My Recipes</h1>
     {% for recipe in recipes%}
     <div class="card list-group-item col-3 m-2" style="width: 18rem;">
         <a href="{{recipe.url}}">

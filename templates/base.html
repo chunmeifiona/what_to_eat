@@ -11,28 +11,33 @@
     <script src="https://unpkg.com/bootstrap"></script>
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
-    <link rel="stylesheet" href="/static/stylesheets/style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
-    <nav class="navbar navbar-expand">
+    <nav class="navbar navbar-expand" style="background-color: #006d77;">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a href="/" class="navbar-brand">
                     <span>What to Eat</span>
                 </a>
             </div>
-            <ul class="nav navbar-nav navbar-right">
-                {% if not g.user %}
-                <li><a href="/signup">Sign up</a></li>
-                <li><a href="/login">Log in</a></li>
-                {% else %}
-                <li><a href="/user/{{g.user.id}}">{{g.user.username}}***</a></li>
-                <li><a href="/myrefrigerator">My Refrigerator***</a></li>
-                <li><a href="/myrecipe/show">My Recipe***</a></li>
-                <li><a href="/logout">Log out/ </a></li>
+            <ul class="nav navbar-nav">
+                {% if g.user %}
+                <li class="nav-item"><a class="nav-link" href="/myrefrigerator">My Refrigerator</a></li>
+                <li class="nav-item"><a class="nav-link" href="/myrecipe/show">My Recipe</a></li>
                 {% endif %}
             </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if not g.user %}
+                <li class="nav-item"><a class="nav-link" href="/signup">Sign up</a></li>
+                <li class="nav-item"><a class="nav-link" href="/login">Log in</a></li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link" href="/user/{{g.user.id}}">{{g.user.username}}</a></li>
+                <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
+                {% endif %}
+            </ul>
+
         </div>
     </nav>
     <div class="container">
