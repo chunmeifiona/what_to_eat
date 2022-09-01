@@ -171,7 +171,10 @@ def search_recipe(params):
     res = requests.get(f"{API_BASE_URL}", params = params)
     data = res.json() 
     recipes = []
-    
+
+    if data["count"] == 0:
+        recipes = None
+
     for hit in data["hits"]:
         recipe = {k:v for k, v in {"image":hit["recipe"].get("image", "No"), 
                                    "label":hit["recipe"].get("label", "No"), 

@@ -40,7 +40,7 @@ class LoginForm(FlaskForm):
 
 class SearchForm(FlaskForm):
     """Search recipe form"""
-    search_q = StringField('Search', validators=[DataRequired()])
+    search_q = StringField('Keyword', validators=[DataRequired()])
     cuisineType = SelectField('CuisineType', choices=[(cu, cu) for cu in cuisines])
     mealType = SelectField('MealType', choices=[(m, m) for m in meals])
     dishType = SelectField('DishType', choices=[(d, d) for d in dishs])

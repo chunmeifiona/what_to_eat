@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="row justify-content-md-center">
+<div class="row justify-content-md-center  mt-5">
     <div class="col-md-7 col-lg-5">
-        <h2 class="join-message">Hello, {{user.username}}</h2>
+        <h2 class="join-message mt-2">Hello, {{user.username}}</h2>
         <div>
             <img src="{{user.image_url}}" alt="">
         </div>
-        <span>{{user.email}}</span><br>
-        <span>My favorite cuisine is {{user.cuisineType}}</span>
+        <div>{{user.email}}</div>
+        <div>My favorite cuisine is {{user.cuisineType}}</div>
         <div>
-            <a href="/user/edit"><button>Edit My Profile</button></a>
-            <a href="/user/delete"><button>Delete</button></a>
+            <a class="btn btn-secondary mt-1" href="/user/edit" role="button">Edit My Profile</a>
+            <a class="btn btn-secondary mt-1" href="/user/delete" role="button">Delete</a>
         </div>
 
     </div>

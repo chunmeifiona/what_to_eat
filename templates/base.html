@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <title>What to Eat</title>
 
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
     <script src="https://unpkg.com/jquery"></script>
     <script src="https://unpkg.com/popper"></script>
     <script src="https://unpkg.com/bootstrap"></script>
@@ -15,7 +16,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand" style="background-color: #006d77;">
+    <nav class="navbar navbar-expand sticky-top" style="background-color: #e63946;">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a href="/" class="navbar-brand">
@@ -25,7 +26,7 @@
             <ul class="nav navbar-nav">
                 {% if g.user %}
                 <li class="nav-item"><a class="nav-link" href="/myrefrigerator">My Refrigerator</a></li>
-                <li class="nav-item"><a class="nav-link" href="/myrecipe/show">My Recipe</a></li>
+                <li class="nav-item"><a class="nav-link" href="/myrecipe/show">My Recipes</a></li>
                 {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -49,10 +50,50 @@
         {% endblock %}
 
     </div>
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 col-md-6">
+                    <h6>About</h6>
+                    <p class="text-justify">What to Eat is An web application that give some recipes according to what
+                        food items are in the refrigerator.</p>
+                </div>
+
+                <div class="col-xs-6 col-md-3">
+                    <h6>Categories</h6>
+                    <ul class="footer-links">
+                        <li><a href="/myrefrigerator">My Refrigerator</a></li>
+                        <li><a href="/myrecipe/show">My Recipes</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-xs-6 col-md-3">
+                    <h6>Quick Links</h6>
+                    <ul class="footer-links">
+                        <li><a href="/">Contact Us</a></li>
+                        <li><a href="/">Home</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-sm-6 col-xs-12">
+                    <p class="copyright-text">Copyright &copy; 2022 All Rights Reserved by
+                        <a href="#">Chunmei Li</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
     <script src="https://unpkg.com/axios/dist/axios.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.js"
         integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
     <!-- <script src="/static/recipe.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>

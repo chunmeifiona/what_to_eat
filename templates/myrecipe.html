@@ -1,22 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="row justify-content-md-center">
-    <h1>My Recipes</h1>
+<div class="row justify-content-md-center mb-5">
+    <h2 class="join-message mt-2">My Recipes</h2>
     {% for recipe in recipes%}
     <div class="card list-group-item col-3 m-2" style="width: 18rem;">
         <a href="{{recipe.url}}">
             <img src="{{recipe.image}}" class="card-img-top" alt="..."></a>
-        <div class="card-body">
+        <div class="card-body mb-5">
             <a href="{{recipe.url}}">
-                <h5 class="card-title">{{recipe.label}}</h5>
+                <h5 class="card-title recipe_label">{{recipe.label}}</h5>
             </a>
-            <a href="/myrecipe/delete/{{recipe.id}}"><button>delete</button></a>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">{{recipe.cuisinetype}}</li>
-                <li class="list-group-item">{{recipe.dishtype}}</li>
-                <li class="list-group-item">{{recipe.mealtype}}</li>
-            </ul>
-            <p class="card-text"> Ingeredients : <br> {{recipe.ingredient}}</p>
+            <span class="recipe_type badge bg-danger">{{recipe.cuisinetype}}</span>
+            <span class="recipe_type badge bg-danger">{{recipe.dishtype}}</span>
+            <span class="recipe_type badge bg-danger">{{recipe.mealtype}}</span><br>
+            <a class="btn btn-secondary btn-sm mt-2 mb-1" href="/myrecipe/delete/{{recipe.id}}" role="button">Delete</a>
         </div>
 
     </div>
