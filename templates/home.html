@@ -45,31 +45,25 @@
         <span class="recipe_type badge bg-danger">{{cuisineType}}</span>
         {% endfor %}
         {% for dishType in recipe.dishType %}
-        <span class="recipe_type badge bg-danger">{{dishType}}</span>
+        <span class="recipe_type badge bg-warning">{{dishType}}</span>
         {% endfor %}
         {% for mealType in recipe.mealType %}
-        <span class="recipe_type badge bg-danger">{{mealType}}</span>
+        <span class="recipe_type badge bg-success">{{mealType}}</span>
         {% endfor %}
         <form action="/myrecipe/add" method="POST">
             <button class="btn btn-secondary btn-sm mt-1 mb-1" id="add_recipe_{{loop.index}}"
                 data-index="{{loop.index}}" type="submit">Add
                 to my recipe</button>
-            <input type="text" name="label" class="d-none" value="{{recipe.label}}">
-            <input type="text" name="image" class="d-none" value="{{recipe.image}}">
-            <input type="text" name="cuisinetype" class="d-none" value="{{recipe.cuisineType}}">
-            <input type="text" name="dishtype" class="d-none" value="{{recipe.dishType}}">
-            <input type="text" name="mealtype" class="d-none" value="{{recipe.mealType}}">
-            <input type="text" name="ingredient" class="d-none" value="{{recipe.ingredientLines}}">
+            <input type="text" name="recipe" class="d-none" value="{{recipe}}">
         </form>
 
         <div id="recipe_ingeredients_{{loop.index}}" class="card-text"
             data-options='{"ingredient":"{{recipe.ingredientLines}}"}'>
-            Ingeredients : <br>
+            <b> Ingeredients</b> : <br>
             {% for ingredient in recipe.ingredientLines %}
             <small>{{ingredient}}</small><br>
             {% endfor %}
         </div>
-
     </div>
     {% endfor %}
     {% endif %}

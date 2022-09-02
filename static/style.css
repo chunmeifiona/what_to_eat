@@ -20,6 +20,9 @@ a {
     text-decoration: none;
 }
 
+.recipe_ingredient {
+    white-space: pre-line;
+}
 
 .site-footer {
     background-color: #26272b;

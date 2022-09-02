@@ -1,6 +1,7 @@
 from crypt import methods
 import os
 import random
+import json
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
@@ -20,8 +21,13 @@ app = Flask(__name__)
 
 # Get DB_URI from environ variable (useful for production/testing) or,
 # if not set there, use development local db.
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    os.environ.get('DATABASE_URL', 'postgresql:///what_to_eat'))
+uri = os.environ.get('DATABASE_URL', 'postgresql:///what_to_eat')
+if uri.startswith("postgres://"):
+ uri = uri.replace("postgres://", "postgresql://", 1)
+# rest of connection code using the connection string `uri`
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
+# app.config['SQLALCHEMY_DATABASE_URI'] = (
+#     os.environ.get('DATABASE_URL', 'postgresql:///what_to_eat'))
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
@@ -166,6 +172,30 @@ def delete_user():
 #################################################################
 #################################################################
 
+def singleQuoteToDoubleQuote(singleQuoted):
+            '''
+            convert a single quoted string to a double quoted one
+            Args:
+                singleQuoted(string): a single quoted string e.g. {'cities': [{'name': "Upper Hell's Gate"}]}
+            Returns:
+                string: the double quoted version of the string e.g. 
+            see
+               - https://stackoverflow.com/questions/55600788/python-replace-single-quotes-with-double-quotes-but-leave-ones-within-double-q 
+            '''
+            cList=list(singleQuoted)
+            inDouble=False;
+            inSingle=False;
+            for i,c in enumerate(cList):
+                #print ("%d:%s %r %r" %(i,c,inSingle,inDouble))
+                if c=="'":
+                    if not inDouble:
+                        inSingle=not inSingle
+                        cList[i]='"'
+                elif c=='"':
+                    inDouble=not inDouble
+            doubleQuoted="".join(cList)    
+            return doubleQuoted
+
 def search_recipe(params):
     """search recipes via extarnal api and get recipe json data"""
     res = requests.get(f"{API_BASE_URL}", params = params)
@@ -182,7 +212,6 @@ def search_recipe(params):
                                    "ingredientLines":hit["recipe"].get("ingredientLines", "No"),
                                    "cuisineType":hit["recipe"].get("cuisineType", "No"),
                                    "dishType":hit["recipe"].get("dishType", "No"),
-                                #    "dishType":hit["recipe"]["dishType"],
                                    "mealType":hit["recipe"].get("mealType", "No")}.items()}
         recipes.append(recipe)
 
@@ -223,20 +252,26 @@ def add_recipe():
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    label = request.form["label"]
-    image =  request.form["image"]
-    ingredient =  request.form["ingredient"].replace("['","").replace("']","").replace("', '","\n")
-    cuisinetype = request.form["cuisinetype"].replace("']",'').replace("['",'')
-    mealtype = request.form["mealtype"].replace("']",'').replace("['",'')
-    dishtype = request.form["dishtype"].replace("']",'').replace("['",'')
-    
+    recipe_str = singleQuoteToDoubleQuote(request.form["recipe"])
+    recipe = json.loads(recipe_str)
+
+    label=recipe["label"]
+    image=recipe["image"]
+    cuisinetype = "/".join(recipe["cuisineType"])
+    dishtype = "/".join(recipe["dishType"])
+    mealtype = "/".join(recipe["mealType"])
+    ingredient = "\n".join(recipe["ingredientLines"])
+
     try:
-        recipe = Recipe(label=label, image=image, cuisinetype=cuisinetype, dishtype=dishtype,mealtype=mealtype,ingredient=ingredient, user_id=g.user.id)
+        recipe = Recipe(label=label, image=image, cuisinetype=cuisinetype, 
+                        dishtype=dishtype, mealtype=mealtype,
+                        ingredient=ingredient, user_id=g.user.id)
+        
         db.session.add(recipe)
         db.session.commit()
 
     except IntegrityError:
-        flash("Already in my recipe",'danger')
+        flash("This recipe is already in my recipes",'danger')
     
     return redirect("/")
 
@@ -261,6 +296,7 @@ def show_myrecipe():
         return redirect("/")
 
     recipes = Recipe.query.filter(Recipe.user_id==g.user.id).all()
+
     return render_template('myrecipe.html',recipes=recipes)
 
 #################################################################

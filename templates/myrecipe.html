@@ -11,9 +11,12 @@
                 <h5 class="card-title recipe_label">{{recipe.label}}</h5>
             </a>
             <span class="recipe_type badge bg-danger">{{recipe.cuisinetype}}</span>
-            <span class="recipe_type badge bg-danger">{{recipe.dishtype}}</span>
-            <span class="recipe_type badge bg-danger">{{recipe.mealtype}}</span><br>
-            <a class="btn btn-secondary btn-sm mt-2 mb-1" href="/myrecipe/delete/{{recipe.id}}" role="button">Delete</a>
+            <span class="recipe_type badge bg-warning">{{recipe.dishtype}}</span>
+            <span class="recipe_type badge bg-success">{{recipe.mealtype}}</span><br>
+            <a class="btn btn-secondary btn-sm mt-2 mb-1" href="/myrecipe/delete/{{recipe.id}}"
+                role="button">Delete</a><br>
+            <b> Ingeredients</b> : <br>
+            <small class="recipe_ingredient">{{recipe.ingredient}}</small><br>
         </div>
 
     </div>
