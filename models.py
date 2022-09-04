@@ -62,6 +62,7 @@ class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     label = db.Column(db.Text, nullable=False, unique=True)
     image = db.Column(db.Text, default = DEFAULT_IMG_URL_RECIPE)
+    url = db.Column(db.Text)
     ingredient = db.Column(db.Text)
     mealtype = db.Column(db.Text)
     dishtype = db.Column(db.Text)

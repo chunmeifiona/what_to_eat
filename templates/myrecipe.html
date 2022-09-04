@@ -1,25 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="row justify-content-md-center mb-5">
-    <h2 class="join-message mt-2">My Recipes</h2>
-    {% for recipe in recipes%}
-    <div class="card list-group-item col-3 m-2" style="width: 18rem;">
-        <a href="{{recipe.url}}">
-            <img src="{{recipe.image}}" class="card-img-top" alt="..."></a>
-        <div class="card-body mb-5">
-            <a href="{{recipe.url}}">
-                <h5 class="card-title recipe_label">{{recipe.label}}</h5>
-            </a>
-            <span class="recipe_type badge bg-danger">{{recipe.cuisinetype}}</span>
-            <span class="recipe_type badge bg-warning">{{recipe.dishtype}}</span>
-            <span class="recipe_type badge bg-success">{{recipe.mealtype}}</span><br>
-            <a class="btn btn-secondary btn-sm mt-2 mb-1" href="/myrecipe/delete/{{recipe.id}}"
-                role="button">Delete</a><br>
-            <b> Ingeredients</b> : <br>
-            <small class="recipe_ingredient">{{recipe.ingredient}}</small><br>
-        </div>
+<h2 class="join-message mt-2">My Recipes</h2>
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4 mt-2 mb-2">
 
+    {% for recipe in recipes%}
+    <div class="col">
+        <div class="card h-100">
+            <img src="{{recipe.image}}" class="card-img-top" alt="...">
+            <div class="card-body mb-5">
+                <a href="{{recipe.url}}">
+                    <h5 class="card-title recipe_label">{{recipe.label}}</h5>
+                </a>
+                <span class="recipe_type badge bg-danger">{{recipe.cuisinetype}}</span>
+                <span class="recipe_type badge bg-warning">{{recipe.dishtype}}</span>
+                <span class="recipe_type badge bg-success">{{recipe.mealtype}}</span><br>
+                <a class="btn btn-outline-secondary btn-sm mt-2 mb-1" href="/myrecipe/delete/{{recipe.id}}"
+                    role="button">Delete</a> <br>
+                <b> Ingeredients</b> : <br>
+                <small class="recipe_ingredient">{{recipe.ingredient}}</small><br>
+            </div>
+        </div>
     </div>
     {% endfor %}
+
 </div>
 {% endblock %}

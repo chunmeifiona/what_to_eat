@@ -24,8 +24,7 @@
     </div>
 </div>
 
-<div class="row justify-content-md-center">
-
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4 mt-2 mb-2">
     {% if recipes is none %}
     <div class="mt-3 mb-5">
         <p>Sorry, no content matched your criteria.</p>
@@ -33,36 +32,38 @@
     </div>
     {% else %}
     {% for recipe in recipes%}
-    <div class="card list-group-item col-3 m-2 {{loop.index}}" style="width: 18rem;">
-        <a id="recipe_url_{{loop.index}}" href="{{recipe.url}}">
-            <img id="recipe_image_{{loop.index}}" src="{{recipe.image}}" class="card-img-top" alt="..."></a>
+    <div class="col">
+        <div class="card h-100">
+            <img id="recipe_image_{{loop.index}}" src="{{recipe.image}}" class="card-img-top" alt="...">
+            <div class="card-body">
+                <a href="{{recipe.url}}">
+                    <h5 id="recipe_label_{{loop.index}}" class="card-title recipe_label">{{recipe.label}}
+                    </h5>
+                </a>
+                {% for cuisineType in recipe.cuisineType %}
+                <span class="recipe_type badge bg-danger">{{cuisineType}}</span>
+                {% endfor %}
+                {% for dishType in recipe.dishType %}
+                <span class="recipe_type badge bg-warning">{{dishType}}</span>
+                {% endfor %}
+                {% for mealType in recipe.mealType %}
+                <span class="recipe_type badge bg-success">{{mealType}}</span>
+                {% endfor %}
+                <form action="/myrecipe/add" method="POST">
+                    <button class="btn btn-outline-secondary btn-sm mt-1 mb-1" id="add_recipe_{{loop.index}}"
+                        data-index="{{loop.index}}" type="submit">Add
+                        to my recipe</button>
+                    <input type="text" name="recipe" class="d-none" value="{{recipe}}">
+                </form>
 
-        <a href="{{recipe.url}}">
-            <h5 id="recipe_label_{{loop.index}}" class="card-title recipe_label">{{recipe.label}}
-            </h5>
-        </a>
-        {% for cuisineType in recipe.cuisineType %}
-        <span class="recipe_type badge bg-danger">{{cuisineType}}</span>
-        {% endfor %}
-        {% for dishType in recipe.dishType %}
-        <span class="recipe_type badge bg-warning">{{dishType}}</span>
-        {% endfor %}
-        {% for mealType in recipe.mealType %}
-        <span class="recipe_type badge bg-success">{{mealType}}</span>
-        {% endfor %}
-        <form action="/myrecipe/add" method="POST">
-            <button class="btn btn-secondary btn-sm mt-1 mb-1" id="add_recipe_{{loop.index}}"
-                data-index="{{loop.index}}" type="submit">Add
-                to my recipe</button>
-            <input type="text" name="recipe" class="d-none" value="{{recipe}}">
-        </form>
-
-        <div id="recipe_ingeredients_{{loop.index}}" class="card-text"
-            data-options='{"ingredient":"{{recipe.ingredientLines}}"}'>
-            <b> Ingeredients</b> : <br>
-            {% for ingredient in recipe.ingredientLines %}
-            <small>{{ingredient}}</small><br>
-            {% endfor %}
+                <div id="recipe_ingeredients_{{loop.index}}" class="card-text"
+                    data-options='{"ingredient":"{{recipe.ingredientLines}}"}'>
+                    <b> Ingeredients</b> : <br>
+                    {% for ingredient in recipe.ingredientLines %}
+                    <small>{{ingredient}}</small><br>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
     {% endfor %}

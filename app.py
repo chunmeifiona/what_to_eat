@@ -257,13 +257,14 @@ def add_recipe():
 
     label=recipe["label"]
     image=recipe["image"]
+    url=recipe["url"]
     cuisinetype = "/".join(recipe["cuisineType"])
     dishtype = "/".join(recipe["dishType"])
     mealtype = "/".join(recipe["mealType"])
     ingredient = "\n".join(recipe["ingredientLines"])
 
     try:
-        recipe = Recipe(label=label, image=image, cuisinetype=cuisinetype, 
+        recipe = Recipe(label=label, image=image, url=url, cuisinetype=cuisinetype, 
                         dishtype=dishtype, mealtype=mealtype,
                         ingredient=ingredient, user_id=g.user.id)
         
