@@ -9,10 +9,12 @@ from  sqlalchemy.sql.expression import func
 import requests
 from forms import UserAddForm, LoginForm, SearchForm, UserEditForm, RefrigeratorForm
 from models import db, connect_db, User, Recipe, Refrigerator, DEFAULT_IMG_URL_USER
-from secret import app_id, app_key
+# from secret import app_id, app_key
 
-APP_ID = app_id
-APP_KEY = app_key
+# APP_ID = app_id
+# APP_KEY = app_key
+APP_ID = os.getenv('APP_ID',"optional-default")
+APP_KEY = os.getenv('APP_KEY', "optional-default")
 API_BASE_URL = "https://api.edamam.com/api/recipes/v2"
 
 CURR_USER_KEY = "curr_user"
