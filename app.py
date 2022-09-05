@@ -13,8 +13,8 @@ from models import db, connect_db, User, Recipe, Refrigerator, DEFAULT_IMG_URL_U
 
 # APP_ID = app_id
 # APP_KEY = app_key
-APP_ID = os.getenv('APP_ID',"optional-default")
-APP_KEY = os.getenv('APP_KEY', "optional-default")
+APP_ID = "d5bde7fd" #os.getenv('APP_ID',"optional-default")
+APP_KEY = "2f20522258e440754a7a733104b92304"#os.getenv('APP_KEY', "optional-default")
 API_BASE_URL = "https://api.edamam.com/api/recipes/v2"
 
 CURR_USER_KEY = "curr_user"
