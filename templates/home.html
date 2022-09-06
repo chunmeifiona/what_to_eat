@@ -23,14 +23,14 @@
         </form>
     </div>
 </div>
-
-<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4 mt-2 mb-2">
-    {% if recipes is none %}
-    <div class="mt-3 mb-5">
-        <p>Sorry, no content matched your criteria.</p>
+{% if recipes is none %}
+<div class="row justify-content-md-center mt-3 mb-5">
+    <h3>RECOMMENDED RECIPES</h3>
+    <p>Sorry, no content matched your criteria. Keyword is <i><b>{{params.q}}</b></i> form My Refigerator.
         <img src="/static/images/404.jpg" class="img-fluid" alt="404">
-    </div>
-    {% else %}
+</div>
+{% else %}
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4 mt-2 mb-2">
     {% for recipe in recipes%}
     <div class="col">
         <div class="card h-100">
@@ -67,7 +67,6 @@
         </div>
     </div>
     {% endfor %}
-    {% endif %}
 </div>
-
+{% endif %}
 {% endblock %}
