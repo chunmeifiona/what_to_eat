@@ -49,13 +49,14 @@
                 {% for mealType in recipe.mealType %}
                 <span class="recipe_type badge bg-success">{{mealType}}</span>
                 {% endfor %}
+                {% if g.user %}
                 <form action="/myrecipe/add" method="POST">
                     <button class="btn btn-outline-secondary btn-sm mt-1 mb-1" id="add_recipe_{{loop.index}}"
                         data-index="{{loop.index}}" type="submit">Add
                         to my recipe</button>
                     <input type="text" name="recipe" class="d-none" value="{{recipe}}">
                 </form>
-
+                {% endif %}
                 <div id="recipe_ingeredients_{{loop.index}}" class="card-text"
                     data-options='{"ingredient":"{{recipe.ingredientLines}}"}'>
                     <b> Ingeredients</b> : <br>
