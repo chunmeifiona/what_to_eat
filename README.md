@@ -1,5 +1,6 @@
 # What to Eat
-An web application that give some recipes according to what food items are in your refrigerator.
+This application allows user to search recipes based on filters.   
+After the users sign up/log in they can save liked recipes and listing food items in their refrigerator. This application gives some recipes according to what food items are in user's refrigerator and user's favorite cuisine type.
 
 ## Deployed Site
 
